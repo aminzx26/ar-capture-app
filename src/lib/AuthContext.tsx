@@ -12,7 +12,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
-  loading: true,
+  loading: false,
   signOut: async () => {},
 });
 
@@ -21,9 +21,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 3000);
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
+      clearTimeout(timer);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
